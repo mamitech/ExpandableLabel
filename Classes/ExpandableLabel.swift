@@ -67,6 +67,10 @@ import UIKit
     /// Set 'true' if the label can be collapsed or 'false' if not.
     /// The default value is 'false'.
     @IBInspectable open var shouldCollapse: Bool = false
+    
+    /// Set spacing between line on attributed text
+    /// The default value is 'false'.
+    @IBInspectable open var lineSpacing: CGFloat = 0.0
 
     /// Set the link name (and attributes) that is shown when collapsed.
     /// The default value is "More". Cannot be nil.
@@ -141,8 +145,7 @@ import UIKit
     open private(set) var expandedText: NSAttributedString?
     open override var attributedText: NSAttributedString? {
         set(attributedText) {
-            if let attributedText = attributedText?.copyWithAddedFontAttribute(font).copyWithParagraphAttribute(font),
-                attributedText.length > 0 {
+            if let attributedText = attributedText?.copyWithAddedFontAttribute(font).copyWithParagraphAttribute(font, lineSpacing: lineSpacing), attributedText.length > 0 {
                 self.collapsedText = getCollapsedText(for: attributedText, link: (linkHighlighted) ? collapsedAttributedLink.copyWithHighlightedColor() : self.collapsedAttributedLink)
                 self.expandedText = getExpandedText(for: attributedText, link: (linkHighlighted) ? expandedAttributedLink?.copyWithHighlightedColor() : self.expandedAttributedLink)
                 super.attributedText = (self.collapsed) ? self.collapsedText : self.expandedText
@@ -395,11 +398,11 @@ private extension NSAttributedString {
         return font != nil
     }
 
-    func copyWithParagraphAttribute(_ font: UIFont) -> NSAttributedString {
+    func copyWithParagraphAttribute(_ font: UIFont, lineSpacing: CGFloat) -> NSAttributedString {
         let paragraphStyle = NSMutableParagraphStyle()
         paragraphStyle.lineHeightMultiple = 1.05
         paragraphStyle.alignment = .left
-        paragraphStyle.lineSpacing = 0.0
+        paragraphStyle.lineSpacing = lineSpacing
         paragraphStyle.minimumLineHeight = font.lineHeight
         paragraphStyle.maximumLineHeight = font.lineHeight
 
